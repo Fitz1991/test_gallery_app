@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_gallery_app/card_image.dart';
 import 'package:test_gallery_app/model/gallery_image.dart';
 
@@ -13,7 +12,6 @@ class GalleryPage extends StatelessWidget {
   ScrollController _scrollController;
   int pageNo = 1;
   int maxPages;
-  SharedPreferences prefs;
 
   @override
   Widget build(BuildContext context) {
