@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test_gallery_app/domain/gallery/gallery_bloc.dart';
-import 'package:test_gallery_app/full_screen.dart';
+import 'package:test_gallery_app/block/gallery/full_screen_bloc/full_screen_bloc.dart';
+import 'package:test_gallery_app/full_screen_page.dart';
 
+import 'block/gallery/gallery_bloc/gallery_bloc.dart';
+import 'block/gallery/gallery_navigation_bloc/navigation_bloc.dart';
 import 'gallery_page.dart';
 
 void main() {
@@ -14,51 +16,44 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      onGenerateRoute: (routeSettings){
-        var path = routeSettings.name.split('/');
-
-        if (path[1] == "full_screen") {
-          return new MaterialPageRoute(
-            builder: (context) => FullScreen(),
-            settings: routeSettings,
-          );
-        } else{
-          return new MaterialPageRoute(
-            builder: (context) => MyHomePage(),
-            settings: routeSettings,
-          );
-        }
-      },
       title: 'Test gallery app',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home:
-      MultiBlocProvider(
+      home: MultiBlocProvider(
         providers: [
-          BlocProvider<GalleryBloc>(create: (context) =>
-          GalleryBloc()
-            ..add(LoadImages(page: 1))),
+          BlocProvider<GalleryBloc>(
+              create: (context) => GalleryBloc()..add(LoadImages(page: 1))),
+          BlocProvider<NavigationBloc>(
+            create: (context) => NavigationBloc(),
+          ),
+          BlocProvider<FullScreenBloc>(
+            create: (context) => FullScreenBloc(),
+          )
         ],
-        child: MyHomePage(title: 'Test gallery app'),
-      )
-      ,
+        child: MyHomePage(),
+      ),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  String title;
-
-  MyHomePage({this.title});
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title),),
-      body: GalleryPage()
+    return BlocBuilder<NavigationBloc, NavigationState>(
+      builder: (context, state) {
+        if (state is GalleryPageState) {
+          return GalleryPage();
+        }
+        if (state is FullScreenPageState) {
+          return FullScreen(
+            galleryImage: state.galleryImage,
+          );
+        } else {
+          return GalleryPage();
+        }
+      },
     );
   }
 }
-

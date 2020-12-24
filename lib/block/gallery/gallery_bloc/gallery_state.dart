@@ -8,7 +8,10 @@ class GalleryInitial extends GalleryState {}
 class GalleryLoaded extends GalleryState {
   List<GalleryImage> images;
   int maxPages;
+
   GalleryLoaded({this.images, this.maxPages});
 }
+
 class GalleryLoading extends GalleryState {}
+
 class GalleryLoadError extends GalleryState {}

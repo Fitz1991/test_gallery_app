@@ -1,21 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:test_gallery_app/domain/gallery/gallery_bloc.dart';
-import 'package:test_gallery_app/generated/assets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test_gallery_app/card_image.dart';
 import 'package:test_gallery_app/model/gallery_image.dart';
+
+import 'block/gallery/gallery_bloc/gallery_bloc.dart';
+import 'block/gallery/gallery_navigation_bloc/navigation_bloc.dart';
 
 class GalleryPage extends StatelessWidget {
   List<GalleryImage> images;
-  ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController;
   int pageNo = 1;
   int maxPages;
+  SharedPreferences prefs;
 
-  GalleryPage();
-  
   @override
   Widget build(BuildContext context) {
+    double scrollPosition = BlocProvider.of<GalleryBloc>(context)
+        .prefs
+        ?.getDouble('scroll_position');
+    _scrollController = ScrollController(
+        initialScrollOffset: (scrollPosition != null) ? scrollPosition : 0);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -25,62 +31,42 @@ class GalleryPage extends StatelessWidget {
         }
       }
     });
-    return  BlocBuilder<GalleryBloc, GalleryState>(
+    return Scaffold(
+      appBar: AppBar(title: Text('Галлерея')),
+      body: BlocBuilder<GalleryBloc, GalleryState>(
         builder: (context, state) {
-          if(state is GalleryInitial){
+          if (state is GalleryInitial) {
             return Text('Loading...');
           }
-          if(state is GalleryLoaded){
+          if (state is GalleryLoaded) {
             maxPages = state.maxPages;
             return ListView.builder(
               itemCount: state.images.length,
               itemBuilder: (context, index) {
-                return Container(
-                  padding: EdgeInsets.all(10),
-                  height: 300,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/full_screen/${state.images[index].id}');
-                            // BlocProvider.of<NavigationBloc>(context).add(NavigateTo(NavItem.full_screen));
-                          },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.all(5.0),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                child: Image.network(state.images[index].url, fit: BoxFit.cover,)),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
-                          onTap: () {
-
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SvgPicture.asset(Assets.assetsLike, color: Colors.black12, width: 30, height: 30,),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                );
+                return _cardImage(state, context, index);
               },
               controller: _scrollController,
             );
-          }
-          else{
+          } else {
             return Text('Что-то пошло не так...');
           }
         },
-      );
+      ),
+    );
   }
 
+  Widget _cardImage(GalleryLoaded state, BuildContext context, int index) {
+    return CardImage(
+      () => BlocProvider.of<GalleryBloc>(context)
+          .add(LikeGallery(state.images[index])),
+      isLiked: state.images[index].iSLiked,
+      onNavigate: () {
+        BlocProvider.of<GalleryBloc>(context)
+            .add(SaveScrollPosition(_scrollController.position.pixels));
+        BlocProvider.of<NavigationBloc>(context)
+            .add(NavigateToFullScreen(state.images[index]));
+      },
+      urlImage: state.images[index].url,
+    );
+  }
 }
