@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test_gallery_app/card_image.dart';
+import 'package:test_gallery_app/view/card_image.dart';
 import 'package:test_gallery_app/model/gallery_image.dart';
 
-import 'block/gallery/gallery_bloc/gallery_bloc.dart';
-import 'block/gallery/gallery_navigation_bloc/navigation_bloc.dart';
+import '../block/gallery/gallery_bloc/gallery_bloc.dart';
+import '../block/gallery/gallery_navigation_bloc/navigation_bloc.dart';
 
 class GalleryPage extends StatelessWidget {
   List<GalleryImage> images;

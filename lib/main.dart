@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_gallery_app/block/gallery/full_screen_bloc/full_screen_bloc.dart';
-import 'package:test_gallery_app/full_screen_page.dart';
+import 'package:test_gallery_app/view/full_screen_page.dart';
 
 import 'block/gallery/gallery_bloc/gallery_bloc.dart';
 import 'block/gallery/gallery_navigation_bloc/navigation_bloc.dart';
-import 'gallery_page.dart';
+import 'view/gallery_page.dart';
 
 void main() {
   runApp(MyApp());
