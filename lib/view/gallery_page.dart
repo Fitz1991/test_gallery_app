@@ -9,17 +9,12 @@ import '../block/gallery/gallery_navigation_bloc/navigation_bloc.dart';
 
 class GalleryPage extends StatelessWidget {
   List<GalleryImage> images;
-  ScrollController _scrollController;
+  ScrollController _scrollController = ScrollController();
   int pageNo = 1;
   int maxPages;
 
   @override
   Widget build(BuildContext context) {
-    double scrollPosition = BlocProvider.of<GalleryBloc>(context)
-        .prefs
-        ?.getDouble('scroll_position');
-    _scrollController = ScrollController(
-        initialScrollOffset: (scrollPosition != null) ? scrollPosition : 0);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -39,6 +34,7 @@ class GalleryPage extends StatelessWidget {
           if (state is GalleryLoaded) {
             maxPages = state.maxPages;
             return ListView.builder(
+              key: PageStorageKey<String>('galleryList'),
               itemCount: state.images.length,
               itemBuilder: (context, index) {
                 return _cardImage(state, context, index);
@@ -59,8 +55,6 @@ class GalleryPage extends StatelessWidget {
           .add(LikeGallery(state.images[index])),
       isLiked: state.images[index].iSLiked,
       onNavigate: () {
-        BlocProvider.of<GalleryBloc>(context)
-            .add(SaveScrollPosition(_scrollController.position.pixels));
         BlocProvider.of<NavigationBloc>(context)
             .add(NavigateToFullScreen(state.images[index]));
       },

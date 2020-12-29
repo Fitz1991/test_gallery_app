@@ -35,8 +35,6 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
     }
     if (event is LikeGallery) yield* _likeGallery(event.galleryImage);
     if (event is LoadingImages) yield GalleryLoading();
-    if (event is SaveScrollPosition)
-      prefs.setDouble('scroll_position', event.scrollPosition);
   }
 
   Stream<GalleryState> _likeGallery(GalleryImage galleryImage) async* {

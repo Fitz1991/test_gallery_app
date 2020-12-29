@@ -17,9 +17,3 @@ class LikeGallery extends GalleryEvent {
 
   LikeGallery(this.galleryImage);
 }
-
-class SaveScrollPosition extends GalleryEvent {
-  double scrollPosition;
-
-  SaveScrollPosition(this.scrollPosition);
-}
